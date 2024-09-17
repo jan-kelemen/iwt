@@ -1,1 +1,1 @@
-add_subdirectory(iwt)
+add_subdirectory(iwtint)
