@@ -1,0 +1,56 @@
+name: aarch64 CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    
+    env:
+      GCC_VER: 14
+      CLANG_VER: 18
+      
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [gcc-aarch64-linux-hardened, clang-libstdcxx-aarch64-linux-hardened]
+        
+    steps:
+      - name: Checkout repository from github
+        uses: actions/checkout@v4
+
+      - name: Install gcc-${{ env.GCC_VER }}
+        uses: ./.github/actions/install-gcc
+        with:
+          version: ${{ env.GCC_VER }}
+          arch: 'aarch64'
+
+      - name: Install clang-${{ env.CLANG_VER }}
+        if: contains(matrix.profile, 'clang')
+        uses: ./.github/actions/install-clang 
+        with:
+          version: ${{ env.CLANG_VER }}
+
+      - name: Setup Conan
+        id: setup-conan
+        uses: ./.github/actions/setup-conan
+        with:
+           profile: ${{ matrix.profile }}
+
+      - name: Configure CMake
+        run: |
+          cmake -DCMAKE_POSITION_INDEPENDENT_CODE=ON --preset release
+
+      - name: Build
+        run: |
+          cmake --build --preset=release
+
