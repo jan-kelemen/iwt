@@ -177,3 +177,196 @@ TEST_CASE("div by zero", "[iwtint]")
     check_div_by_zero<long long>();
     check_div_by_zero<unsigned long long>();
 }
+
+template<typename T>
+void check_narrow_to_8_16_32_bits()
+{
+    static_assert(sizeof(T) >= 1 && sizeof(T) <= 4);
+    static_assert(sizeof(intmax_t) > 4);
+
+    T out; // NOLINT
+
+    static constexpr intmax_t z{};
+    CHECK(iwtint::narrow(z, out));
+    CHECK(out == T{});
+
+    static constexpr intmax_t upper{std::numeric_limits<T>::max()};
+    CHECK(iwtint::narrow(upper, out));
+    CHECK(out == std::numeric_limits<T>::max());
+
+    static constexpr intmax_t above{upper + 1};
+    CHECK_FALSE(iwtint::narrow(above, out));
+
+    if constexpr (std::is_signed_v<T>)
+    {
+        static constexpr intmax_t lower{std::numeric_limits<T>::min()};
+        CHECK(iwtint::narrow(lower, out));
+        CHECK(out == std::numeric_limits<T>::min());
+
+        static constexpr intmax_t below{lower - 1};
+        CHECK_FALSE(iwtint::narrow(below, out));
+    }
+    else
+    {
+        static constexpr intmax_t neg{-1};
+        CHECK_FALSE(iwtint::narrow(neg, out));
+    }
+}
+
+template<typename T>
+void check_narrow_to_64_bits()
+{
+    static_assert(sizeof(T) == 8);
+
+    T out; // NOLINT
+
+    static constexpr intmax_t z{};
+    CHECK(iwtint::narrow(z, out));
+    CHECK(out == T{});
+
+    if constexpr (std::is_unsigned_v<T>)
+    {
+        static constexpr intmax_t neg{-1};
+        CHECK_FALSE(iwtint::narrow(neg, out));
+
+        static constexpr uintmax_t upper{std::numeric_limits<T>::max()};
+        CHECK(iwtint::narrow(upper, out));
+        CHECK(out == std::numeric_limits<T>::max());
+    }
+    else
+    {
+        static constexpr intmax_t upper{std::numeric_limits<T>::max()};
+        CHECK(iwtint::narrow(upper, out));
+        CHECK(out == std::numeric_limits<T>::max());
+
+        static constexpr uintmax_t above{std::numeric_limits<uintmax_t>::max()};
+        CHECK_FALSE(iwtint::narrow(above, out));
+    }
+}
+
+template<typename T>
+void check_char_type_as_source()
+{
+    intmax_t out;
+
+    static constexpr T z{};
+    CHECK(iwtint::narrow(z, out));
+    CHECK(out == intmax_t{});
+
+    static constexpr T v{3};
+    static constexpr intmax_t r{3};
+    CHECK(iwtint::narrow(v, out));
+    CHECK(out == r);
+
+    if constexpr (std::is_signed_v<T>)
+    {
+        static constexpr T neg{-1};
+        uintmax_t uout;
+        CHECK_FALSE(iwtint::narrow(neg, uout));
+    }
+
+    static constexpr T upper{std::numeric_limits<T>::max()};
+    CHECK(iwtint::narrow(upper, out));
+
+    static constexpr T lower{std::numeric_limits<T>::min()};
+    CHECK(iwtint::narrow(lower, out));
+}
+
+template<typename Source, typename Target>
+void check_char_type_as_source_and_target()
+{
+    Target out;
+
+    static constexpr Source source_z{};
+    static constexpr Target target_z{};
+
+    CHECK(iwtint::narrow(source_z, out));
+    CHECK(out == target_z);
+
+    if constexpr (std::is_signed_v<Source> && std::is_signed_v<Target>)
+    {
+        static constexpr Source max{std::numeric_limits<Source>::max()};
+        if constexpr (sizeof(Source) > sizeof(Target))
+        {
+            CHECK_FALSE(iwtint::narrow(max, out));
+        }
+        else
+        {
+            CHECK(iwtint::narrow(max, out));
+        }
+    }
+    else if constexpr (std::is_signed_v<Source> && std::is_unsigned_v<Target>)
+    {
+        static constexpr Source neg{-1};
+        CHECK_FALSE(iwtint::narrow(neg, out));
+    }
+    else if constexpr (std::is_unsigned_v<Source> && std::is_signed_v<Target>)
+    {
+        static constexpr Source max{std::numeric_limits<Source>::max()};
+        if constexpr (sizeof(Source) >= sizeof(Target))
+        {
+            CHECK_FALSE(iwtint::narrow(max, out));
+        }
+        else
+        {
+            CHECK(iwtint::narrow(max, out));
+        }
+    }
+    else
+    {
+        static_assert(std::is_unsigned_v<Source> && std::is_unsigned_v<Target>);
+
+        static constexpr Source max{std::numeric_limits<Source>::max()};
+        if constexpr (sizeof(Source) > sizeof(Target))
+        {
+            CHECK_FALSE(iwtint::narrow(max, out));
+        }
+        else
+        {
+            CHECK(iwtint::narrow(max, out));
+        }
+    }
+}
+
+TEST_CASE("narrow", "[iwtint]")
+{
+    check_narrow_to_8_16_32_bits<char>();
+    check_narrow_to_8_16_32_bits<unsigned char>();
+    check_narrow_to_8_16_32_bits<signed char>();
+    check_narrow_to_8_16_32_bits<char8_t>();
+    check_narrow_to_8_16_32_bits<char16_t>();
+    check_narrow_to_8_16_32_bits<char32_t>();
+    check_narrow_to_8_16_32_bits<wchar_t>();
+    check_narrow_to_8_16_32_bits<short>();
+    check_narrow_to_8_16_32_bits<unsigned short>();
+    check_narrow_to_8_16_32_bits<int>();
+    check_narrow_to_8_16_32_bits<unsigned int>();
+#ifdef IWTINT_IS_MSVC
+    check_narrow_to_8_16_32_bits<long>();
+    check_narrow_to_8_16_32_bits<unsigned long>();
+#else
+    check_narrow_to_64_bits<long>();
+    check_narrow_to_64_bits<unsigned long>();
+#endif
+    check_narrow_to_64_bits<long long>();
+    check_narrow_to_64_bits<unsigned long long>();
+}
+
+TEST_CASE("narrow with char types")
+{
+    check_char_type_as_source<char>();
+    check_char_type_as_source<char8_t>();
+    check_char_type_as_source<char16_t>();
+    check_char_type_as_source<char32_t>();
+    check_char_type_as_source<wchar_t>();
+
+    check_char_type_as_source_and_target<char, char8_t>();
+    check_char_type_as_source_and_target<char, char16_t>();
+    check_char_type_as_source_and_target<char, char32_t>();
+    check_char_type_as_source_and_target<char, wchar_t>();
+
+    check_char_type_as_source_and_target<char8_t, wchar_t>();
+    check_char_type_as_source_and_target<char16_t, char32_t>();
+    check_char_type_as_source_and_target<char32_t, char16_t>();
+    check_char_type_as_source_and_target<wchar_t, char8_t>();
+}

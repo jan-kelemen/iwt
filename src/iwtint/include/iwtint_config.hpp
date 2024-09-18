@@ -22,6 +22,11 @@ namespace iwtint
     constexpr bool size_align_sign_matches_v{(sizeof(T) == sizeof(U)) &&
         (alignof(T) == alignof(U)) &&
         (std::is_signed_v<T> == std::is_signed_v<T>) };
+
+    template<typename T, typename... Candidates>
+    constexpr bool is_any_of_v =
+        std::disjunction_v<std::is_same<T, Candidates>...>;
+
 } // namespace iwtint
 
 #endif
