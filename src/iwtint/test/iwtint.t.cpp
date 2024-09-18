@@ -28,6 +28,25 @@ void check_add_overflow()
     CHECK(out == r1);
 }
 
+TEST_CASE("add overflow", "[iwtint]")
+{
+    check_add_overflow<char>();
+    check_add_overflow<unsigned char>();
+    check_add_overflow<signed char>();
+    check_add_overflow<char8_t>();
+    check_add_overflow<char16_t>();
+    check_add_overflow<char32_t>();
+    check_add_overflow<wchar_t>();
+    check_add_overflow<short>();
+    check_add_overflow<unsigned short>();
+    check_add_overflow<int>();
+    check_add_overflow<unsigned int>();
+    check_add_overflow<long>();
+    check_add_overflow<unsigned long>();
+    check_add_overflow<long long>();
+    check_add_overflow<unsigned long long>();
+}
+
 template<typename T>
 void check_sub_overflow()
 {
@@ -57,6 +76,25 @@ void check_sub_overflow()
     CHECK(out == r1);
 }
 
+TEST_CASE("sub overflow", "[iwtint]")
+{
+    check_sub_overflow<char>();
+    check_sub_overflow<unsigned char>();
+    check_sub_overflow<signed char>();
+    check_sub_overflow<char8_t>();
+    check_sub_overflow<char16_t>();
+    check_sub_overflow<char32_t>();
+    check_sub_overflow<wchar_t>();
+    check_sub_overflow<short>();
+    check_sub_overflow<unsigned short>();
+    check_sub_overflow<int>();
+    check_sub_overflow<unsigned int>();
+    check_sub_overflow<long>();
+    check_sub_overflow<unsigned long>();
+    check_sub_overflow<long long>();
+    check_sub_overflow<unsigned long long>();
+}
+
 template<typename T>
 void check_mul_overflow()
 {
@@ -78,6 +116,25 @@ void check_mul_overflow()
     static constexpr T r1{14};
     CHECK(iwtint::mul(v5, v6, out));
     CHECK(out == r1);
+}
+
+TEST_CASE("mul overflow", "[iwtint]")
+{
+    check_mul_overflow<char>();
+    check_mul_overflow<unsigned char>();
+    check_mul_overflow<signed char>();
+    check_mul_overflow<char8_t>();
+    check_mul_overflow<char16_t>();
+    check_mul_overflow<char32_t>();
+    check_mul_overflow<wchar_t>();
+    check_mul_overflow<short>();
+    check_mul_overflow<unsigned short>();
+    check_mul_overflow<int>();
+    check_mul_overflow<unsigned int>();
+    check_mul_overflow<long>();
+    check_mul_overflow<unsigned long>();
+    check_mul_overflow<long long>();
+    check_mul_overflow<unsigned long long>();
 }
 
 template<typename T>
@@ -102,63 +159,6 @@ void check_div_by_zero()
     CHECK(out == r2);
 }
 
-TEST_CASE("add overflow", "[iwtint]")
-{
-    check_add_overflow<char>();
-    check_add_overflow<unsigned char>();
-    check_add_overflow<signed char>();
-    check_add_overflow<char8_t>();
-    check_add_overflow<char16_t>();
-    check_add_overflow<char32_t>();
-    check_add_overflow<char32_t>();
-    check_add_overflow<short>();
-    check_add_overflow<unsigned short>();
-    check_add_overflow<int>();
-    check_add_overflow<unsigned int>();
-    check_add_overflow<long>();
-    check_add_overflow<unsigned long>();
-    check_add_overflow<long long>();
-    check_add_overflow<unsigned long long>();
-}
-
-TEST_CASE("sub overflow", "[iwtint]")
-{
-    check_sub_overflow<char>();
-    check_sub_overflow<unsigned char>();
-    check_sub_overflow<signed char>();
-    check_sub_overflow<char8_t>();
-    check_sub_overflow<char16_t>();
-    check_sub_overflow<char32_t>();
-    check_sub_overflow<char32_t>();
-    check_sub_overflow<short>();
-    check_sub_overflow<unsigned short>();
-    check_sub_overflow<int>();
-    check_sub_overflow<unsigned int>();
-    check_sub_overflow<long>();
-    check_sub_overflow<unsigned long>();
-    check_sub_overflow<long long>();
-    check_sub_overflow<unsigned long long>();
-}
-
-TEST_CASE("mul overflow", "[iwtint]")
-{
-    check_mul_overflow<char>();
-    check_mul_overflow<unsigned char>();
-    check_mul_overflow<signed char>();
-    check_mul_overflow<char8_t>();
-    check_mul_overflow<char16_t>();
-    check_mul_overflow<char32_t>();
-    check_mul_overflow<char32_t>();
-    check_mul_overflow<short>();
-    check_mul_overflow<unsigned short>();
-    check_mul_overflow<int>();
-    check_mul_overflow<unsigned int>();
-    check_mul_overflow<long>();
-    check_mul_overflow<unsigned long>();
-    check_mul_overflow<long long>();
-    check_mul_overflow<unsigned long long>();
-}
-
 TEST_CASE("div by zero", "[iwtint]")
 {
     check_div_by_zero<char>();
@@ -167,7 +167,7 @@ TEST_CASE("div by zero", "[iwtint]")
     check_div_by_zero<char8_t>();
     check_div_by_zero<char16_t>();
     check_div_by_zero<char32_t>();
-    check_div_by_zero<char32_t>();
+    check_div_by_zero<wchar_t>();
     check_div_by_zero<short>();
     check_div_by_zero<unsigned short>();
     check_div_by_zero<int>();

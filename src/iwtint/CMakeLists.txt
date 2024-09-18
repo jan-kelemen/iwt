@@ -3,6 +3,12 @@ add_library(iwtint INTERFACE)
 target_sources(iwtint
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include/iwtint.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/iwtint_addition.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/iwtint_config.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/iwtint_division.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/iwtint_multiplication.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/iwtint_subtraction.hpp
+        
 )
 
 target_include_directories(iwtint
