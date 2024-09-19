@@ -139,6 +139,34 @@ TEST_CASE("mul overflow", "[iwtint]")
 }
 
 template<typename T>
+void check_mul_by_neg_one()
+{
+    if constexpr (std::is_signed_v<T>)
+    {
+        T out; // NOLINT
+        static constexpr T lim{std::numeric_limits<T>::min()};
+        static constexpr T neg{-1};
+        CHECK_FALSE(iwtint::mul(lim, neg, out));
+
+        static constexpr T upper{std::numeric_limits<T>::max()};
+        static constexpr T r1{-std::numeric_limits<T>::max()};
+        CHECK(iwtint::mul(upper, neg, out));
+        CHECK(out == r1);
+    }
+}
+
+TEST_CASE("mul signed min by -1", "[iwtint]")
+{
+    check_mul_by_neg_one<char>();
+    check_mul_by_neg_one<signed char>();
+    check_mul_by_neg_one<wchar_t>();
+    check_mul_by_neg_one<short>();
+    check_mul_by_neg_one<int>();
+    check_mul_by_neg_one<long>();
+    check_mul_by_neg_one<long long>();
+}
+
+template<typename T>
 void check_div_by_zero()
 {
     T out; // NOLINT
@@ -177,6 +205,34 @@ TEST_CASE("div by zero", "[iwtint]")
     check_div_by_zero<unsigned long>();
     check_div_by_zero<long long>();
     check_div_by_zero<unsigned long long>();
+}
+
+template<typename T>
+void check_div_by_neg_one()
+{
+    if constexpr (std::is_signed_v<T>)
+    {
+        T out; // NOLINT
+        static constexpr T lower{std::numeric_limits<T>::min()};
+        static constexpr T neg{-1};
+        CHECK_FALSE(iwtint::div(lower, neg, out));
+
+        static constexpr T upper{std::numeric_limits<T>::max()};
+        static constexpr T r1{-std::numeric_limits<T>::max()};
+        CHECK(iwtint::div(upper, neg, out));
+        CHECK(out == r1);
+    }
+}
+
+TEST_CASE("div signed min by -1", "[iwtint]")
+{
+    check_div_by_neg_one<char>();
+    check_div_by_neg_one<signed char>();
+    check_div_by_neg_one<wchar_t>();
+    check_div_by_neg_one<short>();
+    check_div_by_neg_one<int>();
+    check_div_by_neg_one<long>();
+    check_div_by_neg_one<long long>();
 }
 
 template<typename T>
