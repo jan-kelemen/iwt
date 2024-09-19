@@ -5,6 +5,7 @@
 
 #include <climits>
 #include <concepts>
+#include <cwchar>
 #include <utility>
 
 namespace iwtint
@@ -44,7 +45,11 @@ namespace iwtint
 #ifdef IWTINT_IS_MSVC
         using primitive = unsigned short;
 #else
+#if (WCHAR_MIN == 0)
         using primitive = unsigned int;
+#else
+        using primitive = int;
+#endif
 #endif
     };
 
@@ -61,6 +66,7 @@ namespace iwtint
         {
             if (std::in_range<R>(value)) [[likely]]
             {
+                // NOLINTNEXTLINE(bugprone-signed-char-misuse)
                 out = static_cast<R>(value);
                 return true;
             }

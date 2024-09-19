@@ -2,6 +2,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <cstdint>
 #include <limits>
 #include <type_traits> // IWYU pragma: keep
 
@@ -247,7 +248,7 @@ void check_narrow_to_64_bits()
 template<typename T>
 void check_char_type_as_source()
 {
-    intmax_t out;
+    intmax_t out; // NOLINT
 
     static constexpr T z{};
     CHECK(iwtint::narrow(z, out));
@@ -261,7 +262,7 @@ void check_char_type_as_source()
     if constexpr (std::is_signed_v<T>)
     {
         static constexpr T neg{-1};
-        uintmax_t uout;
+        uintmax_t uout; // NOLINT
         CHECK_FALSE(iwtint::narrow(neg, uout));
     }
 
@@ -275,7 +276,7 @@ void check_char_type_as_source()
 template<typename Source, typename Target>
 void check_char_type_as_source_and_target()
 {
-    Target out;
+    Target out; // NOLINT
 
     static constexpr Source source_z{};
     static constexpr Target target_z{};
